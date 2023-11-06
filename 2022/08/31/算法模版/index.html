@@ -20,28 +20,34 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
+  <meta name="description" content="算法模版 最小生成树(Trie) 快读 KMP 可持久化线段树 [分块](# 分块) 单调递增栈求右小(右边第一个小于)代码 树状数组 LCA 树的直径 区间dp  最小生成树(Trie)1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253#include&amp;">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="http://example.com/2022/08/31/%E7%AE%97%E6%B3%95%E6%A8%A1%E7%89%88/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="算法模版 最小生成树(Trie) 快读 KMP 可持久化线段树 [分块](# 分块) 单调递增栈求右小(右边第一个小于)代码 树状数组 LCA 树的直径 区间dp  最小生成树(Trie)1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253#include&amp;">
 <meta property="og:locale">
+<meta property="og:image" content="http://example.com/Users/fukeibun/Library/Application%20Support/typora-user-images/image-20221002093054472.png">
+<meta property="article:published_time" content="2022-08-31T09:20:42.927Z">
+<meta property="article:modified_time" content="2022-10-09T04:52:51.392Z">
 <meta property="article:author" content="Fuyingjie">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/Users/fukeibun/Library/Application%20Support/typora-user-images/image-20221002093054472.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2022/08/31/%E7%AE%97%E6%B3%95%E6%A8%A1%E7%89%88/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Hexo</title>
+  <title> | Hexo</title>
   
 
 
@@ -140,101 +146,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/13/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Fuyingjie">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/13/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">Untitled</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-10-13 17:17:57" itemprop="dateCreated datePublished" datetime="2022-10-13T17:17:57+08:00">2022-10-13</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="ST表"><a href="#ST表" class="headerlink" title="ST表"></a>ST表</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>ST(Sparse Table)表，中文名稀疏表，是一种数据结构。</p>
-<p>ST表常用于解决<strong>可重复贡献问题</strong>。</p>
-<p>什么是可重复贡献问题？</p>
-<p>举例来说：要你求10个数中的最大数，你完全可以先求前6个数的 max ，再求后7个数的 max，然后再对所求的两个最大数求 max 。虽然中间有几个数被重复计算了，但并不影响最后的答案。</p>
-<p><strong>常见的可重复贡献问题有：</strong>区间最值、区间按位和、区间按位或、区间GCD等。二而像区间和这样的问题就不是可重复贡献问题。</p>
-<h3 id="一、ST表的构建"><a href="#一、ST表的构建" class="headerlink" title="一、ST表的构建"></a>一、ST表的构建</h3><p>这里以区间最值作为例子来构建ST表。</p>
-<p>ST表是基于<strong>倍增</strong>算法的。</p>
-<p>我们设 f[i][j] 表示区间 [i,i+2j−1] 内的最值，显然 f[i][0]&#x3D;max[i,i]&#x3D;numi 。</p>
-<p>由倍增思想可得，跳 2i 步相当于先跳 2i−1 步再跳 2i−1 步；同理区间 [i,i+2j−1] 内的最值相当于是区间 [i,i+2j−1−1] 和 [i+2j−1,i+2j−1] 内的最值。</p>
-<p>所以可得式子 f[i][j]&#x3D;max(f[i][j−1],f[i+2j−1][j−1]) 。</p>
-<p>则只需要枚举起点（也就是枚举 i ），接着枚举区间长度（也就是枚举 j ），使得整个区间被包进去，就可以构建出ST表了。</p>
-<p><strong>对于询问：</strong></p>
-<p>当询问区间 [l,r] 内的最值时，我们当然希望直接输出 f[l][x],(l+2x−1&#x3D;r) 。</p>
-<p>由上式子可以得到 x&#x3D;log2(r−l+1) 。</p>
-<p>但问题来了，我们要求 j 得是个整数，但经过对数运算后出的 x 可能是个非整数，若是对其进行取整，向下取整可能使区间变小，向上取整又可能使区间变长，显然怎么都不太合适。</p>
-<p><img src="https://pic4.zhimg.com/80/v2-eb7ae69415dd1fea441a765c461bee33_1440w.jpg" alt="img"></p>
-<p>对区间[1,9]来说，向下取整变成[1,7]，向上取整变成[1,15]</p>
-<p>所以这里有一个办法，那就是把区间 [l,r] 分为两个子区间。</p>
-<p>一部分是向下取整得到的 [l,l+2[log2(r−l+1)]−1] 也就是 f[l][ [x] ] 。</p>
-<p>为了防止向下取整使得区间可能变小带来的影响，我们再塞一个新区间 [r−2x+1,r] 。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-d48868ec65e6db7ea29715d013131706_1440w.webp" alt="img"></p>
-<p>由左右两个重叠的相同长度区间完成覆盖</p>
-<p>由于是可重复贡献问题，虽然两区间有所重叠，但不会造成影响。</p>
-<p>ST表预处理的时间复杂度为 O(nlog2n) ，查询的时间复杂度则为 O(1) 。</p>
-<h3 id="二、参考代码"><a href="#二、参考代码" class="headerlink" title="二、参考代码"></a>二、参考代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">int</span> f[<span class="number">100005</span>][<span class="number">21</span>];</span><br><span class="line"><span class="type">int</span> logn[<span class="number">100005</span>],n,m;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">read</span><span class="params">()</span><span class="comment">//快速读入</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> x=<span class="number">0</span>,f=<span class="number">1</span>;<span class="type">char</span> ch=<span class="built_in">getchar</span>();</span><br><span class="line">    <span class="keyword">while</span> (!<span class="built_in">isdigit</span>(ch))&#123;<span class="keyword">if</span> (ch==<span class="string">&#x27;-&#x27;</span>) f=<span class="number">-1</span>;ch=<span class="built_in">getchar</span>();&#125;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">isdigit</span>(ch))&#123;x=x*<span class="number">10</span>+ch<span class="number">-48</span>;ch=<span class="built_in">getchar</span>();&#125;</span><br><span class="line">    <span class="keyword">return</span> x*f;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pre</span><span class="params">()</span><span class="comment">//预处理log值，防止查询时影响速度</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    logn[<span class="number">1</span>]=<span class="number">0</span>,logn[<span class="number">2</span>]=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">3</span>;i&lt;=n;i++)</span><br><span class="line">        logn[i]=logn[i/<span class="number">2</span>]+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    n=<span class="built_in">read</span>(),m=<span class="built_in">read</span>();</span><br><span class="line">    <span class="built_in">pre</span>();</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;=n;i++)</span><br><span class="line">        f[i][<span class="number">0</span>]=<span class="built_in">read</span>();<span class="comment">//f[i][0]显然就是其本身</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">1</span>;j&lt;=<span class="number">21</span>;j++)<span class="comment">//2的21次方满足两百万数据，若数据变大，这里上限也要变大</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i+(<span class="number">1</span>&lt;&lt;j)<span class="number">-1</span>&lt;=n;i++)</span><br><span class="line">            f[i][j]=<span class="built_in">max</span>(f[i][j<span class="number">-1</span>],f[i+(<span class="number">1</span>&lt;&lt;(j<span class="number">-1</span>))][j<span class="number">-1</span>]);<span class="comment">//倍增的处理</span></span><br><span class="line">    <span class="keyword">while</span>(m--)<span class="comment">//m次询问</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> l=<span class="built_in">read</span>(),r=<span class="built_in">read</span>();</span><br><span class="line">        <span class="type">int</span> lg=logn[r-l+<span class="number">1</span>];</span><br><span class="line">        <span class="type">int</span> ans=<span class="built_in">max</span>(f[l][lg],f[r-(<span class="number">1</span>&lt;&lt;lg)+<span class="number">1</span>][lg]);<span class="comment">//区间重叠计算</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,ans);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="三、使用ST表处理其他问题"><a href="#三、使用ST表处理其他问题" class="headerlink" title="三、使用ST表处理其他问题"></a>三、使用ST表处理其他问题</h3><p>其实只需要对区间最值ST表略作修改即可。</p>
-<p>比如区间按位与，则只需修改以下代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f[i][j]=f[i][j<span class="number">-1</span>]&amp;f[i+(<span class="number">1</span>&lt;&lt;(j<span class="number">-1</span>))][j<span class="number">-1</span>];<span class="comment">//倍增的处理</span></span><br><span class="line">ans=f[l][lg]&amp;f[r-(<span class="number">1</span>&lt;&lt;lg)+<span class="number">1</span>][lg];<span class="comment">//区间重叠运算</span></span><br></pre></td></tr></table></figure>
-
-<p>再比如区间GCD：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f[i][j]=<span class="built_in">gcd</span>(f[i][j<span class="number">-1</span>],f[i+(<span class="number">1</span>&lt;&lt;(j<span class="number">-1</span>))][j<span class="number">-1</span>]);<span class="comment">//倍增的处理</span></span><br><span class="line">ans=<span class="built_in">gcd</span>(f[l][lg],f[r-(<span class="number">1</span>&lt;&lt;lg)+<span class="number">1</span>][lg]);<span class="comment">//区间重叠运算</span></span><br></pre></td></tr></table></figure>
-
-<p>值得一提的是，处理区间GCD时，ST表与线段树的时间复杂度基本相近，但前者却显然要好写得多。</p>
-<p>ST表的缺点在于其只能处理可重复贡献问题，以及其不支持区间修改罢了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
@@ -250,10 +165,9 @@
       <meta itemprop="name" content="Hexo">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
+        <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2022/08/31/%E7%AE%97%E6%B3%95%E6%A8%A1%E7%89%88/" class="post-title-link" itemprop="url">Untitled</a>
-        </h2>
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -283,7 +197,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="算法模版"><a href="#算法模版" class="headerlink" title="算法模版"></a>算法模版</h1><ul>
+        <h1 id="算法模版"><a href="#算法模版" class="headerlink" title="算法模版"></a>算法模版</h1><ul>
 <li><a href="#%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91(Trie)">最小生成树(Trie)</a></li>
 <li><a href="#%E5%BF%AB%E8%AF%BB">快读</a></li>
 <li><a href="#kmp">KMP</a></li>
@@ -331,80 +245,33 @@
 <h2 id="区间dp"><a href="#区间dp" class="headerlink" title="区间dp"></a>区间dp</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> len=<span class="number">2</span>;len&lt;=n;len++)<span class="comment">//枚举区间长度</span></span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i+len<span class="number">-1</span>&lt;=n;i++)&#123;<span class="comment">//枚举区间左端点并保证右端点有效</span></span><br><span class="line"><span class="type">int</span> l=i,r=i+len<span class="number">-1</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> k=l;k&lt;r;k++)<span class="comment">//枚举两个区间交接点</span></span><br><span class="line">&#125;</span><br><span class="line">f[l][r]=...</span><br></pre></td></tr></table></figure>
 
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/30/Diy/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Fuyingjie">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/07/30/Diy/" class="post-title-link" itemprop="url">Diy</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-07-30 10:25:19 / Modified: 10:51:52" itemprop="dateCreated datePublished" datetime="2022-07-30T10:25:19+08:00">2022-07-30</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>略拉，不会markdonw</p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/30/Diy/" rel="prev" title="Diy">
+      <i class="fa fa-chevron-left"></i> Diy
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/13/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -457,6 +324,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%A8%A1%E7%89%88"><span class="nav-number">1.</span> <span class="nav-text">算法模版</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91-Trie"><span class="nav-number">1.1.</span> <span class="nav-text">最小生成树(Trie)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E8%AF%BB"><span class="nav-number">1.2.</span> <span class="nav-text">快读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KMP"><span class="nav-number">1.3.</span> <span class="nav-text">KMP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91"><span class="nav-number">1.4.</span> <span class="nav-text">可持久化线段树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prime"><span class="nav-number">1.5.</span> <span class="nav-text">Prime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91"><span class="nav-number">1.6.</span> <span class="nav-text">线段树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AC%A7%E6%8B%89%E7%AD%9B"><span class="nav-number">1.7.</span> <span class="nav-text">欧拉筛</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%9D%97"><span class="nav-number">1.8.</span> <span class="nav-text">分块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E6%A0%88%E6%B1%82%E5%8F%B3%E5%B0%8F-%E5%8F%B3%E8%BE%B9%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%B0%8F%E4%BA%8E-%E4%BB%A3%E7%A0%81"><span class="nav-number">1.9.</span> <span class="nav-text">单调递增栈求右小(右边第一个小于)代码:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84"><span class="nav-number">1.10.</span> <span class="nav-text">树状数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LCA"><span class="nav-number">1.11.</span> <span class="nav-text">LCA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%9A%84%E7%9B%B4%E5%BE%84"><span class="nav-number">1.12.</span> <span class="nav-text">树的直径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4dp"><span class="nav-number">1.13.</span> <span class="nav-text">区间dp</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
