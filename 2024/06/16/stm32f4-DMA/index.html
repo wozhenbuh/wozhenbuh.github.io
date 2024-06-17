@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="STM32F4 DMA 简介&amp;emsp;&amp;emsp;DMA，全称为:Direct Memory Access，即直接存储器访问。DMA 传输方式无需 CPU 直接 控制传输，也没有中断处理方式那样保留现场和恢复现场的过程，通过硬件为 RAM 与 I&#x2F;O 设备 开辟一条直接传送数据的通路，能使 CPU 的效率大为提高。&amp;emsp;&amp;emsp;STM32F4">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stm32f4 DMA">
+<meta property="og:url" content="http://example.com/2024/06/16/stm32f4-DMA/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="STM32F4 DMA 简介&amp;emsp;&amp;emsp;DMA，全称为:Direct Memory Access，即直接存储器访问。DMA 传输方式无需 CPU 直接 控制传输，也没有中断处理方式那样保留现场和恢复现场的过程，通过硬件为 RAM 与 I&#x2F;O 设备 开辟一条直接传送数据的通路，能使 CPU 的效率大为提高。&amp;emsp;&amp;emsp;STM32F4">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-06-16T10:26:09.000Z">
+<meta property="article:modified_time" content="2024-06-17T09:44:55.076Z">
+<meta property="article:author" content="Fuyingjie">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2024/06/16/stm32f4-DMA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>stm32f4 DMA | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">fyj Blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/16/stm32f4-DMA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fuyingjie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          stm32f4 DMA
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-06-16 18:26:09" itemprop="dateCreated datePublished" datetime="2024-06-16T18:26:09+08:00">2024-06-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-06-17 17:44:55" itemprop="dateModified" datetime="2024-06-17T17:44:55+08:00">2024-06-17</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="STM32F4-DMA-简介"><a href="#STM32F4-DMA-简介" class="headerlink" title="STM32F4 DMA 简介"></a>STM32F4 DMA 简介</h2><p>&amp;emsp;&amp;emsp;DMA，全称为:Direct Memory Access，即直接存储器访问。DMA 传输方式无需 CPU 直接 控制传输，也没有中断处理方式那样保留现场和恢复现场的过程，通过硬件为 RAM 与 I&#x2F;O 设备 开辟一条直接传送数据的通路，能使 CPU 的效率大为提高。<br>&amp;emsp;&amp;emsp;STM32F4 最多有 2 个 DMA 控制器(DMA1 和 DMA2)，共 16 个数据流(每个控制器 8 个)，每 一个 DMA 控制器都用于管理一个或多个外设的存储器访问请求。每个数据流总共可以有多达 8 个通道(或称请求)。每个数据流通道都有一个仲裁器，用于处理 DMA 请求间的优先级。</p>
+<h2 id="DMA-特性"><a href="#DMA-特性" class="headerlink" title="DMA 特性"></a>DMA 特性</h2><p>STM32F4 的 DMA 有以下一些特性:</p>
+<ul>
+<li>双 AHB 主总线架构，一个用于存储器访问，另一个用于外设访问</li>
+<li>仅支持 32 位访问的 AHB 从编程接口</li>
+<li>每个 DMA 控制器有 8 个数据流，每个数据流有多达 8 个通道(或称请求)</li>
+<li>每个数据流有单独的四级 32 位先进先出存储器缓冲区(FIFO)，可用于 FIFO 模式或直<br>接模式。</li>
+<li>通过硬件可以将每个数据流配置为:<br>1，支持外设到存储器、存储器到外设和存储器到存储器传输的常规通道<br>2，支持在存储器方双缓冲的双缓冲区通道</li>
+<li>8 个数据流中的每一个都连接到专用硬件 DMA 通道(请求)</li>
+<li>DMA 数据流请求之间的优先级可用软件编程(4 个级别:非常高、高、中、低)，在软件优先级相同的情况下可以通过硬件决定优先级(例如，请求 0 的优先级高于请求 1)</li>
+<li>每个数据流也支持通过软件触发存储器到存储器的传输(仅限 DMA2 控制器)</li>
+<li>可供每个数据流选择的通道请求多达 8 个。此选择可由软件配置，允许几个外设启动DMA请求</li>
+<li>要传输的数据项的数目可以由 DMA 控制器或外设管理:<br>1，DMA 流控制器:要传输的数据项的数目是 1 到 65535，可用软件编程<br>2，外设流控制器:要传输的数据项的数目未知并由源或目标外设控制，这些外设通过硬 件发出传输结束的信号</li>
+<li>独立的源和目标传输宽度(字节、半字、字):源和目标的数据宽度不相等时，DMA自动封装&#x2F;解封必要的传输数据来优化带宽。这个特性仅在 FIFO 模式下可用。</li>
+<li>对源和目标的增量或非增量寻址</li>
+<li>支持 4 个、8 个和 16 个节拍的增量突发传输。突发增量的大小可由软件配置，通常等 于外设 FIFO 大小的一半</li>
+<li>每个数据流都支持循环缓冲区管理</li>
+<li>5 个事件标志(DMA 半传输、DMA 传输完成、DMA 传输错误、DMA FIFO 错误、直接模式错误)，进行逻辑或运算，从而产生每个数据流的单个中断请求</li>
+</ul>
+<h2 id="配置流程以及相关函数"><a href="#配置流程以及相关函数" class="headerlink" title="配置流程以及相关函数"></a>配置流程以及相关函数</h2><p><strong>1)使能 DMA2 时钟，并等待数据流可配置。</strong><br>&amp;emsp;&amp;emsp;DMA的时钟使能是通过AHB1ENR寄存器来控制的，这里我们要先使能时钟，才可以配置DMA 相关寄存器。所以先要使能 DMA2 的时钟。另外，要对配置寄存器(DMA_SxCR)进行设置，必须 先等待其最低位为 0(也就是 DMA 传输禁止了)，才可以进行配置。<br>&amp;emsp;&amp;emsp;库函数使能 DMA2 时钟的方法为:   </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2,ENABLE);//DMA2 时钟使能</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;等待 DMA 可配置，也就是等待 DMA_SxCR 寄存器最低位为 0 的方法为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">while (DMA_GetCmdStatus(DMA_Streamx) != DISABLE)&#123;&#125;//等待 DMA 可配置</span><br></pre></td></tr></table></figure>
+
+<p><strong>2) 初始化 DMA2 数据流 7，包括配置通道，外设地址，存储器地址，传输数据量等。</strong><br>&amp;emsp;&amp;emsp;DMA 的某个数据流各种配置参数初始化是通过 DMA_Init 函数实现的:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void DMA_Init(DMA_Stream_TypeDef* DMAy_Streamx, DMA_InitTypeDef* DMA_InitStruct);</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;函数的第一个参数是指定初始化的 DMA 的数据流编号，这个很容易理解。入口参数范围 为:DMAx_Stream0~ DMAx_Stream7(x&#x3D;1,2)。下面我们主要看看第二个参数。跟其他外设一样，同样是通过初始化结构体成员变量值来达到初始化的目的，下面我们来看看 DMA_InitTypeDef 结构体的定义:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">typedef struct</span><br><span class="line">&#123;</span><br><span class="line">  uint32_t DMA_Channel;</span><br><span class="line">  uint32_t DMA_PeripheralBaseAddr;</span><br><span class="line">  uint32_t DMA_Memory0BaseAddr;</span><br><span class="line">  uint32_t DMA_DIR;</span><br><span class="line">  uint32_t DMA_BufferSize;</span><br><span class="line">  uint32_t DMA_PeripheralInc;</span><br><span class="line">  uint32_t DMA_MemoryInc;</span><br><span class="line">  uint32_t DMA_PeripheralDataSize;</span><br><span class="line">  uint32_t DMA_MemoryDataSize;</span><br><span class="line">  uint32_t DMA_Mode;</span><br><span class="line">  uint32_t DMA_Priority;</span><br><span class="line">  uint32_t DMA_FIFOMode;</span><br><span class="line">  uint32_t DMA_FIFOThreshold;</span><br><span class="line">  uint32_t DMA_MemoryBurst;</span><br><span class="line">  uint32_t DMA_PeripheralBurst;</span><br><span class="line">&#125;DMA_InitTypeDef;</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;这个结构体的成员比较多，但是每个成员变量的意义我们在前面基本都已经讲解过，这里我们一一做个简要的介绍。<br>&amp;emsp;&amp;emsp;第一个参数 DMA_Channel 用来设置 DMA 数据流对应的通道。前面我们已经讲解过，可供每 个数据流选择的通道请求多达 8 个，取值范围为:DMA_Channel_0~ DMA_Channel_7。<br>&amp;emsp;&amp;emsp;第二个参数 DMA_PeripheralBaseAddr 用来设置 DMA 传输的外设基地址，比如要进行串口 DMA 传输，那么外设基地址为串口接受发送数据存储器 USART1-&gt;DR 的地址，表示方法为 &amp;USART1-&gt;DR。<br>&amp;emsp;&amp;emsp;第三个参数 DMA_Memory0BaseAddr 为内存基地址，也就是我们存放 DMA 传输数据的内存地址。<br>&amp;emsp;&amp;emsp;第四个参数 DMA_DIR 设置数据传输方向，决定是从外设读取数据到内存还送从内存读取数据发送到外设，也就是外设是源地还是目的地，这里我们设置为从内存读取数据发送到串口，所以外设自然就是目的地了，所以选择值DMA_DIR_PeripheralDST。<br>&amp;emsp;&amp;emsp;第五个参数 DMA_BufferSize 设置一次传输数据量的大小，这个很容易理解。<br>&amp;emsp;&amp;emsp;第六个参数 DMA_PeripheralInc 设置传输数据的时候外设地址是不变还是递增。如果设置为递增，那么下一次传输的时候地址加 1，这里因为我们是一直往固定外设地址&amp;USART1-&gt;DR 发送数据，所以地址不递增，值为 DMA_PeripheralInc_Disable;<br>&amp;emsp;&amp;emsp;第七个参数 DMA_MemoryInc 设置传输数据时候内存地址是否递增。这个参数和DMA_PeripheralInc 意思接近，只不过针对的是内存。这里我们的场景是将内存中连续存储单 元的数据发送到串口，毫无疑问内存地址是需要递增的，所以值为 DMA_MemoryInc_Enable。<br>&amp;emsp;&amp;emsp;第八个参数 DMA_PeripheralDataSize 用来设置外设的数据长度是为字节传输(8bits)，半 字传输(16bits)还是字传输(32bits)，这里我们是 8 位字节传输，所以值设置为 DMA_PeripheralDataSize_Byte。<br>&amp;emsp;&amp;emsp;第九个参数DMA_MemoryDataSize是用来设置内存的数据长度，和第七个参数意思接近，这里我们同样设置为字节传输DMA_MemoryDataSize_Byte。<br>&amp;emsp;&amp;emsp;第十个参数DMA_Mode用来设置DMA模式是否循环采集，也就是说，比如我们要从内存中采 集 64 个字节发送到串口，如果设置为重复采集，那么它会在 64 个字节采集完成之后继续从内 存的第一个地址采集，如此循环。这里我们设置为一次连续采集完成之后不循环。所以设置值为 DMA_Mode_Normal。在我们下面的实验中，如果设置此参数为循环采集，那么你会看到串口 不停的打印数据，不会中断，大家在实验中可以修改这个参数测试一下。<br>&amp;emsp;&amp;emsp;第十一个参数 DMA_Priority 是用来设置 DMA 通道的优先级，有低，中，高，超高三种模式， 这个在前面讲解过，这里我们设置优先级别为中级，所以值为 DMA_Priority_Medium。优先级 可以随便设置，因为我们只有一个数据流被开启了。假设有多个数据流开启(最多 8 个)，那么 就要设置优先级了，DMA 仲裁器将根据这些优先级的设置来决定先执行那个数据流的 DMA。优先 级越高的，越早执行，当优先级相同的时候，根据硬件上的编号来决定哪个先执行(编号越小越优先)。<br>&amp;emsp;&amp;emsp;第十二个参数 DMA_FIFOMode 用来设置是否开启 FIFO 模式。这里我们不开启所以选择 DMA_FIFOMode_Disable。<br>&amp;emsp;&amp;emsp;第十三个参数 DMA_FIFOThreshold 用来选择 FIFO 阈值。根据前面讲解可以为 FIFO 容量的 1&#x2F;4,1&#x2F;2,3&#x2F;4 以及 1 倍。这里我们实际并没有开启 FIFO 模式，所以可以不关心。<br>&amp;emsp;&amp;emsp;第十四个参数 DMA_MemoryBurst 用来配置存储器突发传输配置。可以选择为 4 个节拍的增 量突发传输 DMA_MemoryBurst_INC4，8 个节拍的增量突发传输 DMA_MemoryBurst_INC8，16 个街 拍的增量突发传输 DMA_MemoryBurst_INC16 以及单次传输 DMA_MemoryBurst_Single。<br>&amp;emsp;&amp;emsp;第十五个参数 DMA_PeripheralBurst 用来配置外设突发传输配置。跟前面一个参数 DMA_MemoryBurst 作用类似，只不过一个针对的是存储器，一个是外设。这里我们选择单次传 输 DMA_PeripheralBurst_Single。<br>&amp;emsp;&amp;emsp;参数含义我们就给大家讲解到这里，具体详细配置，大家可以参考中文参考手册相关寄存器配置可以更加详细的了解含义。接下来我们给出上面场景的实例代码:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  /* 配置 DMA Stream */</span><br><span class="line">DMA_InitStructure.DMA_Channel = chx; //通道选择 DMA_InitStructure.DMA_PeripheralBaseAddr = par;//DMA 外设地址 DMA_InitStructure.DMA_Memory0BaseAddr = mar;//DMA 存储器 0 地址 DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;//存储器到外设模式 DMA_InitStructure.DMA_BufferSize = ndtr;//数据传输量</span><br><span class="line">DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable; //外设非增量模式</span><br><span class="line">DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//存储器增量模式 DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;</span><br><span class="line">//外设数据长度:8 位 DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;</span><br><span class="line">//存储器数据长度:8 位 DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;// 使用普通模式</span><br><span class="line">DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;//中等优先级 DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full; DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//单次传输 DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;</span><br><span class="line">//外设突发单次传输 DMA_Init(DMA_Streamx, &amp;DMA_InitStructure);//初始化 DMA Stream</span><br></pre></td></tr></table></figure>
+<p><strong>3)使能串口 1 的 DMA 发送</strong><br>&amp;emsp;&amp;emsp;进行 DMA 配置之后，我们就要开启串口的 DMA 发送功能，使用的函数是:  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">USART_DMACmd(USART1,USART_DMAReq_Tx,ENABLE); //使能串口 1 的 DMA 发送</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;如果是要使能串口 DMA 接受，那么第二个参数修改为 USART_DMAReq_Rx 即可。 4)使能 DMA2 数据流 7，启动传输。<br>&amp;emsp;&amp;emsp;使能 DMA 数据流的函数为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void DMA_Cmd(DMA_Stream_TypeDef* DMAy_Streamx, FunctionalState NewState)</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;使能 DMA2_Stream7，启动传输的方法为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DMA_Cmd (DMA2_Stream7，ENABLE);</span><br></pre></td></tr></table></figure>
+<p>通过以上 4 步设置，我们就可以启动一次 USART1 的 DMA 传输了。<br><strong>5)查询 DMA 传输状态</strong><br>&amp;emsp;&amp;emsp;在 DMA 传输过程中，我们要查询 DMA 传输通道的状态，使用的函数是: </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FlagStatus DMA_GetFlagStatus(uint32_t DMAy_FLAG)</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;比如我们要查询 DMA 数据流7传输是否完成，方法是: </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DMA_GetFlagStatus(DMA2_Stream7,DMA_FLAG_TCIF7);</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;这里还有一个比较重要的函数就是获取当前剩余数据量大小的函数:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uint16_t DMA_GetCurrDataCounter(DMA_Stream_TypeDef* DMAy_Streamx);</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;比如我们要获取 DMA 数据流 7 还有多少个数据没有传输，方法是:<br> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DMA_GetCurrDataCounter(DMA1_Channel4);</span><br></pre></td></tr></table></figure><br>&amp;emsp;&amp;emsp;同样，我们也可以设置对应的 DMA 数据流传输的数据量大小,函数为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void DMA_SetCurrDataCounter(DMA_Stream_TypeDef* DMAy_Streamx, uint16_t Counter);</span><br></pre></td></tr></table></figure>
+<p>&amp;emsp;&amp;emsp;DMA 相关的库函数我们就讲解到这里，大家可以查看固件库中文手册详细了解。</p>
+<p><strong><code>摘录于正点原子STM32F4 开发指南(库函数版)ALIENTEK 探索者 STM32F407 开发板教程</code></strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/06/13/IAP/" rel="prev" title="IAP">
+      <i class="fa fa-chevron-left"></i> IAP
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#STM32F4-DMA-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">STM32F4 DMA 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DMA-%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">DMA 特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">配置流程以及相关函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fuyingjie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fuyingjie</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
